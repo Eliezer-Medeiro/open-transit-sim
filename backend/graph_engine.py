@@ -1,5 +1,5 @@
-import osmnx as ox
 import networkx as nx
+import osmnx as ox
 
 # Mantém cache local em disco para acelerar reinicializações
 ox.settings.use_cache = True

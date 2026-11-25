@@ -1,10 +1,10 @@
 from contextlib import asynccontextmanager
+
+import networkx as nx
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
-import networkx as nx
-
 from graph_engine import RoadNetworkEngine
+from pydantic import BaseModel, Field
 
 # Coordenada: Centro de Campo Grande - MS 
 DEFAULT_CENTER = (-20.4697, -54.6201)
