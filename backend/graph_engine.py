@@ -31,10 +31,6 @@ class RoadNetworkEngine:
         }
 
     def compute_bus_route(self, stops: list[tuple[float, float]]) -> dict:
-        """
-        Recebe uma lista de coordenadas (lat, lon) e retorna o trajeto completo
-        pelas ruas reais, distância em km, tempo em minutos e custo por viagem.
-        """
         full_coords: list[list[float]] = []
         total_distance_m = 0.0
         total_time_s = 0.0
@@ -43,9 +39,14 @@ class RoadNetworkEngine:
             orig_lat, orig_lon = stops[i]
             dest_lat, dest_lon = stops[i + 1]
 
-            # OSMnx usa X = longitude, Y = latitude
             orig_node = ox.distance.nearest_nodes(self.graph, orig_lon, orig_lat)
             dest_node = ox.distance.nearest_nodes(self.graph, dest_lon, dest_lat)
+
+            if orig_node == dest_node:
+                node_data = self.graph.nodes[orig_node]
+                if not full_coords:
+                    full_coords.append([node_data["x"], node_data["y"]])
+                continue
 
             route_nodes = nx.shortest_path(
                 self.graph, orig_node, dest_node, weight="travel_time"
@@ -56,7 +57,6 @@ class RoadNetworkEngine:
             total_time_s += float(route_gdf["travel_time"].sum())
 
             for idx, node_id in enumerate(route_nodes):
-                # Evita duplicar o nó de conexão entre trechos consecutivos
                 if i > 0 and idx == 0:
                     continue
                 node_data = self.graph.nodes[node_id]
